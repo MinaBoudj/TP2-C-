@@ -47,21 +47,6 @@ int nbetudiant(string nom){
     return nb;
 }
 
-//calculer le nb de questuion dans le fichier
-int nbquestion(string nom){
-    int nb = 0;
-    string ligne;
-    fstream flux;
-    flux.open(nom,ios::in); //ouverture du fichier en lecture depuis le nom
-    if(flux.is_open()){ //si le fichier est ouvert
-        //lit une ligne non null
-        getline(flux, ligne);   //premier ligne c les reponses juste 
-        return ligne.length();
-    }else{
-        cout << "Erreur impossible d'ouvrir le fichier !!!" << endl;
-    }
-    return nb;
-}
 
 //lire les donnees du fichier 
 //on prend en entree un fichier et on retourne un tableau de note et un tableau de id
