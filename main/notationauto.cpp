@@ -1,4 +1,4 @@
-/* notationauto.cpp
+/* notationauto.cpp 
  * BOUDJEDIR Amina - 16/10/2022
  * TP2 notation Automatique 
  * */
@@ -22,14 +22,6 @@ struct test{
     string bonReponce;
 };
 
-//initialisation d'un tab dynamique
-void init_tab(test & t, int n, int q, string bon, string t){
-    t.tab = new etudiant[n];
-    t.nbetudiant = n;
-    t.nbquestion = q;
-    t.bonReponce = t;
-}
-
 //afficher tableau
 void show_tab(test  t){
     for (int i = 0; i < t.nbetudiant; i++){
@@ -38,14 +30,14 @@ void show_tab(test  t){
 }
 
 //calculer le nb d'etudiant le nb de ligne du fichier
-int nbetudiant(string nom, test t){
+int nbetudiant(string nom){
     string ligne;
     fstream flux;
     int nb=0;
     flux.open(nom,ios::in); //ouverture du fichier en lecture depuis le nom
     if(flux.is_open()){ //si le fichier est ouvert
         //lit une ligne non null jusqu'a l'espace
-        getline(flux, ligne);
+        getline(flux, ligne);   //premier ligne c les reponces du teste
         while(getline(flux, ligne)){
             nb++;
         }
@@ -63,7 +55,7 @@ int nbquestion(string nom){
     flux.open(nom,ios::in); //ouverture du fichier en lecture depuis le nom
     if(flux.is_open()){ //si le fichier est ouvert
         //lit une ligne non null
-        getline(flux, ligne);
+        getline(flux, ligne);   //premier ligne c les reponses juste 
         return ligne.length();
     }else{
         cout << "Erreur impossible d'ouvrir le fichier !!!" << endl;
@@ -73,18 +65,24 @@ int nbquestion(string nom){
 
 //lire les donnees du fichier 
 //on prend en entree un fichier et on retourne un tableau de note et un tableau de id
+
 void readflux(string nom,test & t){
     fstream flux;
     string ligne;
-    string mat = "";
-    string reponse = "";
+    string mat;
+    string reponse;
     int i,j, q;
     j=0;
     q=0;
     flux.open(nom,ios::in); //ouverture du fichier en lecture depuis le nom
     if(flux.is_open()){ //si le fichier est ouvert
         //lit une ligne non null jusqu'a l'espace
-        while(getline(flux, ligne)){
+        getline(flux, ligne); //premiere ligne des les reponces juste du teste
+        t.nbquestion = ligne.length();
+        t.bonReponce = ligne;
+        t.nbetudiant = nbetudiant(nom);
+        t.tab = new etudiant[t.nbetudiant];
+        while(getline(flux, ligne)){    //les etudiants et leurs reponses
             i=0;
             mat = "";
             while(ligne.at(i) != ' '){
@@ -107,23 +105,10 @@ void readflux(string nom,test & t){
         cout << "Impossible d'ouvrir le fichier !!!!" << endl;
 }
 
-//calculer la note de l'etudiant a partir de ses reponse  
-// 1 bonne repense 2 points | une mauvaise reponse - 1  
-int note_of_test(string answer){
-    int note =0;
-    for(int i=0; i<answer.length(); i++){
-        if(answer.at(i) == 'T')
-            note +=2;
-        else if(answer.at(i) == 'F')
-            note --;
-    }
-    return note;
-}
-
 //transformer le note en point
-char point_of_test(int note, test t){
+char point_of_test(int note, int nbquestion){
     int p;
-    p = note*100/(t.nbquestion*2);
+    p = note*100/(nbquestion*2);
     if(p>=90 && p<=100)
         return 'A';
     else if(p>=80 && p<=89,99)
@@ -134,12 +119,24 @@ char point_of_test(int note, test t){
                             return 'D';
                       else  return 'F';
 }
-//calculer les notes de tt les etudiants
-void note_of_all_test(test & t){
-    for(int i=0; i<t.nbetudiant; i++){
-        t.tab[i].note = point_of_test(note_of_test(t.tab[i].reponse),t);
+
+//calculer la note de l'etudiant a partir de ses reponse  
+// 1 bonne repense 2 points | une mauvaise reponse - 1  
+void note_of_all_test(test t){
+    int note;
+    for(int j=0; j<t.nbetudiant; j++){ //pour chaque etudiant
+        note = 0;
+        for(int i=0; i<t.nbquestion; i++){
+            if(t.tab[j].reponse.at(i) == t.bonReponce.at(i))
+                note +=2;
+            else if(note>0)
+                    note --;
+        }
+        cout << note << endl;
+        t.tab[j].note = point_of_test(note, t.nbquestion);  
     }
 }
+
 
 //afficher les notes 
 void show_note(test t, string nom){
@@ -160,14 +157,16 @@ void show_note(test t, string nom){
 int main(){
     test t;
     string nom = "teste.txt";
-    cout << " nb ="<<nbetudiant(nom,t) << endl;
 
-   // init_tab(t,nbetudiant(nom, t),20);
-   // readflux(nom, t);
-    //show_tab(t);
+    cout << "le nombre de Question du teste est : " << nbquestion(nom)<< endl;
+    cout << "le nombre d'etudiant qu'on fais le teste est : "<< nbetudiant(nom) << endl;
+    readflux(nom, t);
+    cout <<endl;
+    cout << "affichage du tableau d'etudiant qu'on passer le teste avec leur reponse sans note " << endl;
+    show_tab(t);
     
-    //note_of_all_test(t);
-    //show_note(t,nom);
+    note_of_all_test(t);
+    show_note(t,nom);
 
     //delete t.tab;
 return 0;
