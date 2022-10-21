@@ -143,9 +143,9 @@ int main(){
     test t;
     string nom = "teste.txt";
 
-    cout << "le nombre de Question du teste est : " << nbquestion(nom)<< endl;
-    cout << "le nombre d'etudiant qu'on fais le teste est : "<< nbetudiant(nom) << endl;
     readflux(nom, t);
+    cout << "le nombre de Question du teste est : " << t.nbquestion << endl;
+    cout << "le nombre d'etudiant qu'on fais le teste est : "<< nbetudiant(nom) << endl;
     cout <<endl;
     cout << "affichage du tableau d'etudiant qu'on passer le teste avec leur reponse sans note " << endl;
     show_tab(t);
